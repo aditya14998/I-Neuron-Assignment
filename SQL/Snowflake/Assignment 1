@@ -1,0 +1,102 @@
+USE LKDB;
+
+--- Creating Table------
+
+Create or replace table Sales
+        (order_id string,
+        order_date date PRIMARY KEY,
+        ship_date date,
+        ship_mode varchar(50),
+        customer_name varchar(40),
+        segment	varchar(40),
+        state	varchar(60),
+        country	varchar(40),
+        market  varchar(40),	
+        region varchar(40),
+        product_id	string,
+        category varchar(40),	
+        sub_category varchar(40),	
+        product_name varchar(300),	
+        sales  int, 	
+        quantity number(12,0),
+        discount float(24),	
+        profit	float(53),
+        shipping_cost float(53),	
+        order_priority varchar(30),	
+        year string
+       );
+
+select * from sales;
+
+describe table sales;
+
+--- 1.Changing Primary key to Order ID ---
+
+Alter table sales
+Drop  Primary key ;
+
+alter table sales
+add primary key (order_id);
+
+--- 2.Check the data type for Order date and Ship date and mention in what data type it should be?--
+
+-- already updated datatype in excel and than uploaded in snowflake
+
+
+--- 3.Create a new column called order_extract and extract the number after the last ‘–‘from Order ID column.
+
+
+Alter table sales
+Add column order_extract varchar(20);
+        
+Select * from sales;
+
+Update sales
+Set order_extract = substr(order_id,9);
+
+--- 4.Create a new column called Discount Flag and categorize it based on discount. Use ‘Yes’ if the discount is greater than zero else ‘No’.
+
+alter table sales
+add column Discount_Flag varchar(10);
+
+update sales
+Set Discount_Flag = Case when DISCOUNT>0 then 'Yes'
+                    Else 'No'
+                    End;
+                    
+select * from sales;                 
+
+--- 6.Create a new column called process days and calculate how many days it takes for each order id to process from the order to its shipment.
+
+Alter table sales
+Add column process_days varchar(20);
+
+select * from sales;
+
+Update sales
+Set process_days = datediff('day',order_date,ship_date);
+
+select process_days from sales;
+
+---5.Create a new column called Rating and then based on the Process dates give rating like given below.
+---a. If process days less than or equal to 3days then rating should be 5
+---b. If process days are greater than 3 and less than or equal to 6 then rating should be 4
+---c. If process days are greater than 6 and less than or equal to 10 then rating should be 3
+---d. If process days are greater than 10 then the rating should be 2.
+
+Alter table sales
+Add column Rating Varchar(10);
+
+select * from sales;
+
+Update sales
+Set Rating= Case 
+            When process_days <=3 then 5
+            when process_days >3 and process_days <= 6 then 4
+            when process_days >6 and process_days <= 10 then 3
+            else 2
+            End;
+            
+            
+            
+            
